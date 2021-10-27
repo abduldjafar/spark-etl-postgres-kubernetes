@@ -13,7 +13,7 @@ from pyspark.sql.window import Window
 spark = SparkSession.builder.master("spark://localhost:7077").appName("etl-apps") \
     .getOrCreate()
 
-df = spark.read.csv('data/transaction.csv', sep='|', header=True, inferSchema=True)
+df = spark.read.csv('/opt/data/transaction.csv', sep='|', header=True, inferSchema=True)
 
 #################################################################
 # ETL Process
@@ -49,11 +49,13 @@ get_longest_streak = get_date_trx_every_items.select("custId","productSold","tra
   .groupBy("custId","productSold") \
   .sum("different_day_2").withColumnRenamed("sum(different_day_2)","longest_streak") 
 
-get_longest_streak.write.format('jdbc') \
+
+get_longest_streak.show()
+
+'''get_longest_streak.write.format('jdbc') \
     .mode("overwrite") \
     .option('url','jdbc:postgresql://localhost:5432/postgres') \
     .option('dbtable','sertis_testing') \
     .option('user','postgres') \
     .option('password','postgres') \
-    .option('driver','org.postgresql.Driver') \
-    .save()
+    .save()'''
