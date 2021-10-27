@@ -1,0 +1,14 @@
+'''
++-----------+-----------+--------+
+|customer_id|productSold|sum_diff|
++-----------+-----------+--------+
+|      23550|    PURA100|       2|
+|      23586|    DETA800|       2|
++-----------+-----------+--------+
+'''
+
+df.filter("custId = 24224 and productSold = 'PURA500'") \
+  .withColumn("lag",lag("transactionDate",1).over(Window.partitionBy("custId","productSold").orderBy(col("transactionDate")))) \
+  .withColumn("different_day",datediff(col("transactionDate"),col("lag"))) \
+  .where(col("different_day").isNotNull()) \
+  .show()

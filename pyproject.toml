@@ -5,7 +5,7 @@ description = "Sertis data engineering take home test"
 authors = ["J. Doe"]
 
 [tool.poetry.dependencies]
-python = "^3.9"
+python = "^3.8"
 pyspark = "3.1.2"
 
 [tool.poetry.dev-dependencies]
