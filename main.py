@@ -1,19 +1,41 @@
 """Entry point for the ETL application
 
 Sample usage:
-docker-compose run etl poetry run python main.py \
+docker-compose run etl python main.py \
   --source /opt/data/transaction.csv \
-  --database warehouse
+  --database postgres \
   --table transactions
 """
 from pyspark.sql import SparkSession
 from pyspark.sql.functions import col,row_number,lag,datediff,when
 from pyspark.sql.window import Window
+import  argparse
+from os import environ
 
-spark = SparkSession.builder.master("spark://localhost:7077").appName("etl-apps") \
+postgres_password = environ["POSTGRES_PASSWORD"]
+postgres_host = environ["POSTGRES_HOST"]
+postgres_port = environ["POSTGRES_PORT"]
+postgres_user = environ["POSTGRES_USER"]
+spark_host = environ["SPARK_HOST"]
+
+my_parser = argparse.ArgumentParser(prog='etl',description='do the etl from csv to postgresql',allow_abbrev=False)
+my_parser.add_argument('--source', action='store', type=str, required=True)
+my_parser.add_argument('--database', action='store', type=str, required=True)
+my_parser.add_argument('--table', action='store', type=str, required=True)
+
+args = my_parser.parse_args()
+
+data_sources = args.source
+database = args.database
+table = args.table
+
+
+
+spark = SparkSession.builder.master(spark_host).appName("etl-apps") \
     .getOrCreate()
 
-df = spark.read.csv('/opt/data/transaction.csv', sep='|', header=True, inferSchema=True)
+df = spark.read.csv(data_sources, sep='|', header=True, inferSchema=True)
+
 
 #################################################################
 # ETL Process
@@ -52,10 +74,10 @@ get_longest_streak = get_date_trx_every_items.select("custId","productSold","tra
 
 get_longest_streak.show()
 
-'''get_longest_streak.write.format('jdbc') \
+get_longest_streak.write.format('jdbc') \
     .mode("overwrite") \
-    .option('url','jdbc:postgresql://localhost:5432/postgres') \
-    .option('dbtable','sertis_testing') \
-    .option('user','postgres') \
-    .option('password','postgres') \
-    .save()'''
+    .option('url',"jdbc:postgresql://"+postgres_host+":"+postgres_port+"/"+database) \
+    .option('dbtable',table) \
+    .option('user',postgres_user) \
+    .option('password',postgres_password) \
+    .save()
