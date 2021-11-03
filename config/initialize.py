@@ -29,9 +29,9 @@ class Initialize(object):
             spark_builder = SparkSession.builder.master(master).appName(app_name)
 
             # add other config params
-            if len(spark_config) > 0:
-                for key, val in spark_config.items():
-                    spark_builder.config(key, val)
+        if len(spark_config) > 0:
+            for key, val in spark_config.items():
+                spark_builder.config(key, val)
 
         # create session and retrieve Spark logger object
         spark_sess = spark_builder.getOrCreate()

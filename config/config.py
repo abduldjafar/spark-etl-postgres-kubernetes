@@ -27,6 +27,11 @@ class Config(object):
         self.table = (
             environ["TABLE_DESTINATION"] if "TABLE_DESTINATION" in environ else ""
         )
+        self.dir_data_sources = (
+            environ["DIR_DATA_SOURCES"]
+            if "DIR_DATA_SOURCES" in environ
+            else "data"
+        )
 
     def get_postgres_password(self):
         return self.postgres_password
@@ -53,3 +58,5 @@ class Config(object):
         with open(file_name) as json_file:
             data = json.load(json_file)
         return data
+    def get_dir_data_sources(self):
+        return self.dir_data_sources

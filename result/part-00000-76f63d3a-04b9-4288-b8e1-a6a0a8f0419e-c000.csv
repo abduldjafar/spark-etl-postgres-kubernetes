@@ -1,0 +1,3 @@
+Column,"favourite_product contained in PURA100,PURA500,PURA250,SUPA101",Compliance,1.0
+Column,longest_streak is non-negative,Compliance,1.0
+Column,customer_id,Uniqueness,1.0

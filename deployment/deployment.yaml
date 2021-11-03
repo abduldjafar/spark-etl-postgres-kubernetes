@@ -1,0 +1,57 @@
+apiVersion: "sparkoperator.k8s.io/v1beta2"
+kind: ScheduledSparkApplication
+metadata:
+  name: pyspark-pi
+  namespace: etl
+spec:
+  schedule: "0 0 * * *"
+  concurrencyPolicy: Allow
+  successfulRunHistoryLimit: 1
+  failedRunHistoryLimit: 3
+  template:
+    dynamicAllocation:
+      enabled: true
+      initialExecutors: 2
+      minExecutors: 2
+      maxExecutors: 10
+    type: Python
+    pythonVersion: "3"
+    mode: cluster
+    image: "gcr.io/GCP_PROJECT_ID/IMAGE_NAME:VERSION"
+    imagePullPolicy: Always
+    mainApplicationFile: local:///opt/spark/examples/src/main/python/main.py
+    sparkVersion: "3.1.1"
+    restartPolicy:
+      type: OnFailure
+      onFailureRetries: 3
+      onFailureRetryInterval: 10
+      onSubmissionFailureRetries: 5
+      onSubmissionFailureRetryInterval: 20
+    driver:
+      cores: 3
+      coreLimit: "1200"
+      memory: "1200m"
+      labels:
+        version: 3.1.1
+      serviceAccount: spark
+    executor:
+      cores: 1
+      instances: 1
+      memory: "1500m"
+      labels:
+        version: 3.1.1
+      env:
+      - name: POSTGRES_PASSWORD
+        value: "Hello from the environment"
+      - name: POSTGRES_HOST
+        value: "Such a sweet sorrow"
+      - name: POSTGRES_PORT
+        value: "Such a sweet sorrow"
+      - name: POSTGRES_USER
+        value: "Such a sweet sorrow"
+      - name: DATA_SOURCES
+        value: "Such a sweet sorrow"
+      - name: DATABASE_DESTINATION
+        value: "Such a sweet sorrow"
+      - name: TABLE_DESTINATION
+        value: "Such a sweet sorrow"
